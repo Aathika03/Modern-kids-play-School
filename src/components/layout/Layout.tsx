@@ -1,17 +1,27 @@
 // src/components/layout/Layout.tsx
-import React, { ReactNode } from "react";
+import React from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-type Props = { children: ReactNode };
+type Props = {
+  children: React.ReactNode;
+};
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: Props): React.JSX.Element {
   return (
-    <>
-      <Navbar />
-      <main>{children}</main>
-      <Footer />
-    </>
+    <div className="min-h-screen flex flex-col">
+      <header>
+        <Navbar />
+      </header>
+
+      <main className="flex-1">
+        {children}
+      </main>
+
+      <footer>
+        <Footer />
+      </footer>
+    </div>
   );
 }
 

@@ -8,7 +8,9 @@ export default function Navbar() {
   return (
     <header style={{ backgroundColor: '#D3ECF6' }}>
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+
+        {/* CLICKABLE LOGO + TEXT */}
+        <Link href="/" className="flex items-center gap-3 cursor-pointer">
           {logoVisible ? (
             <img
               src="/logo.png"
@@ -21,8 +23,11 @@ export default function Navbar() {
               LF
             </div>
           )}
-          <span className="font-bold text-sm tracking-wider">LITTLE FLOWER</span>
-        </div>
+
+          <span className="font-bold text-sm tracking-wider">
+            LITTLE FLOWER
+          </span>
+        </Link>
 
         <nav>
           <ul className="hidden md:flex items-center gap-10 uppercase text-lg font-medium">
