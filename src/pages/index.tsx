@@ -3,7 +3,6 @@ import Hero from "../components/layout/Hero";
 import DailySchedule from "../components/sections/DailySchedule";
 import NoticeBoard from "../components/sections/NoticeBoard";
 
-
 export default function Home() {
   const notices = [
     {

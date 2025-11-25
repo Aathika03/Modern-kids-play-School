@@ -10,18 +10,20 @@ type Props = {
 export default function Layout({ children }: Props): React.JSX.Element {
   return (
     <div className="min-h-screen flex flex-col">
-      <header>
+      {/* NAVBAR */}
+      <header className="w-full">
         <Navbar />
       </header>
 
-      <main className="flex-1">
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 w-full px-4 sm:px-6 md:px-8">
         {children}
       </main>
 
-      <footer>
+      {/* FOOTER */}
+      <footer className="w-full mt-10 md:mt-14">
         <Footer />
       </footer>
     </div>
   );
 }
-

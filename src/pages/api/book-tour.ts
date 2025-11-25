@@ -1,32 +1,53 @@
 // src/pages/api/book-tour.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type Data = { success: boolean; message?: string };
+type ResponseData = { message: string };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ success: false, message: "Method not allowed" });
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
+
+  // Accept either the new form field names OR older ones for backward compatibility.
+  const {
+    parentName,
+    childName,
+    childAge,
+    phone,
+    email,
+    preferredDate,
+    preferredTime,
+    message,
+    // legacy fallback names:
+    name,
+    date,
+  } = req.body || {};
+
+  // Determine readable values (use either parentName or name)
+  const applicantName = parentName || name;
+  const tourDate = preferredDate || date;
+
+  // Validate required fields that frontend sends (parentName/childName/phone are required)
+  if (!applicantName || !childName || !phone) {
+    return res.status(400).json({ message: "Missing required fields: parentName, childName, phone are required." });
+  }
+
+  // Example: At this point you could:
+  // - Save to a DB
+  // - Send an email
+  // - Push to Google Sheets, etc.
+  // For demo, we simply return success.
 
   try {
-    const body = req.body;
+    // Simulate async work if needed
+    // await someDb.save({ ... });
 
-    // Basic validation
-    if (!body || !body.parentName || !body.phone || !body.childName) {
-      return res.status(400).json({ success: false, message: "Missing required fields." });
-    }
-
-    // TODO: Save to DB / send email / connect to CRM
-    // Example: await sendEmailToAdmissions(body);
-
-    // For debugging during development, you can print to console
-    console.log("Book-tour request received:", JSON.stringify(body));
-
-    return res.status(200).json({ success: true, message: "Request received" });
+    // Return success and echo minimal info
+    return res.status(200).json({
+      message: "Success",
+    });
   } catch (err) {
-    console.error("API error (book-tour):", err);
-    return res.status(500).json({ success: false, message: "Server error" });
+    console.error("book-tour handler error:", err);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 }
-

@@ -12,3 +12,60 @@
 .animate-pulse-slow {
   animation: pulse-slow 2.4s ease-in-out infinite;
 }
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 1s ease-out both;
+}
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.9s ease-out forwards;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.glowing-text {
+  text-shadow:
+    0px 0px 10px rgba(255, 255, 255, 0.5),
+    0px 0px 18px rgba(255, 255, 255, 0.3);
+}
+.neon-outline {
+  text-shadow:
+    0 0 8px rgba(59, 47, 42, 0.4),
+    0 0 12px rgba(59, 47, 42, 0.45),
+    0 0 18px rgba(59, 47, 42, 0.5);
+}
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating-text {
+  animation: floating 3s ease-in-out infinite;
+}

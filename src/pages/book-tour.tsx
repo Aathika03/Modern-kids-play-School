@@ -1,9 +1,9 @@
-// src/pages/book-tour.tsx
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 
 export default function BookTour(): React.JSX.Element {
   const router = useRouter();
+
   const [form, setForm] = useState({
     parentName: "",
     childName: "",
@@ -11,8 +11,10 @@ export default function BookTour(): React.JSX.Element {
     phone: "",
     email: "",
     preferredDate: "",
+    preferredTime: "",
     message: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -24,13 +26,13 @@ export default function BookTour(): React.JSX.Element {
     e.preventDefault();
     setErrorMsg(null);
 
-    // basic client validation
-    if (!form.parentName.trim() || !form.phone.trim() || !form.childName.trim()) {
+    if (!form.parentName.trim() || !form.childName.trim() || !form.phone.trim()) {
       setErrorMsg("Please provide parent name, child name and phone number.");
       return;
     }
 
     setLoading(true);
+
     try {
       const res = await fetch("/api/book-tour", {
         method: "POST",
@@ -41,13 +43,11 @@ export default function BookTour(): React.JSX.Element {
       const json = await res.json().catch(() => null);
 
       if (!res.ok) {
-        // show server-side message if present, otherwise generic
         setErrorMsg((json && json.message) || `Failed to submit (status ${res.status}).`);
         setLoading(false);
         return;
       }
 
-      // success -> redirect to success page
       router.push("/book-tour-success");
     } catch (err) {
       console.error("Submit error", err);
@@ -59,14 +59,17 @@ export default function BookTour(): React.JSX.Element {
   return (
     <main className="min-h-screen bg-white flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-3xl bg-white shadow-lg rounded-2xl p-8">
-        <h1 className="text-2xl md:text-3xl font-extrabold mb-2" style={{ color: "#204d63" }}>
+        <h1 className="text-2xl md:text-3xl font-extrabold mb-2 text-[#204d63]">
           Book a Tour
         </h1>
+
         <p className="text-gray-600 mb-6">
           Fill the form and our admissions team will contact you to schedule a visit.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Row 1 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               value={form.parentName}
@@ -84,6 +87,7 @@ export default function BookTour(): React.JSX.Element {
             />
           </div>
 
+          {/* Row 2 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               value={form.childAge}
@@ -107,26 +111,29 @@ export default function BookTour(): React.JSX.Element {
             />
           </div>
 
+          {/* Row 3 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               value={form.preferredDate}
               onChange={(e) => updateField("preferredDate", e.target.value)}
               placeholder="Preferred date (optional)"
-              className="w-full rounded-lg border px-4 py-3"
               type="date"
+              className="w-full rounded-lg border px-4 py-3"
             />
+
             <select
               className="w-full rounded-lg border px-4 py-3"
-              value={form.message}
-              onChange={(e) => updateField("message", e.target.value)}
+              value={form.preferredTime}
+              onChange={(e) => updateField("preferredTime", e.target.value)}
             >
-              <option value="">Prefered time or notes (optional)</option>
+              <option value="">Preferred time (optional)</option>
               <option value="morning">Morning</option>
               <option value="afternoon">Afternoon</option>
               <option value="evening">Evening</option>
             </select>
           </div>
 
+          {/* Message Box */}
           <textarea
             value={form.message}
             onChange={(e) => updateField("message", e.target.value)}
@@ -134,16 +141,16 @@ export default function BookTour(): React.JSX.Element {
             className="w-full rounded-lg border px-4 py-3 min-h-[100px]"
           />
 
+          {/* Error */}
           {errorMsg && <div className="text-sm text-red-600">{errorMsg}</div>}
 
+          {/* Buttons */}
           <div className="flex items-center gap-4">
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-white font-semibold shadow transform transition-transform hover:-translate-y-0.5"
-              style={{
-                backgroundColor: "#60BFB2",
-              }}
+              className="inline-flex items-center px-6 py-3 rounded-md text-white font-semibold shadow"
+              style={{ backgroundColor: "#60BFB2" }}
             >
               {loading ? "Submitting..." : "Submit & Request Tour"}
             </button>
@@ -158,6 +165,7 @@ export default function BookTour(): React.JSX.Element {
                   phone: "",
                   email: "",
                   preferredDate: "",
+                  preferredTime: "",
                   message: "",
                 });
                 setErrorMsg(null);
