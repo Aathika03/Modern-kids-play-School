@@ -69,3 +69,58 @@
 .floating-text {
   animation: floating 3s ease-in-out infinite;
 }
+/* Floating Emoji Animation */
+
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-15px) rotate(6deg); }
+}
+
+/* Footer text hover glow + lift */
+.footer-link {
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  transform: translateY(-3px);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  color: #204d63;
+}
+
+/* Titles */
+.footer-title {
+  font-weight: 600;
+  color: #204d63;
+}
+
+/* Lists */
+.footer-list {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+/* Social row */
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* VERSION 2 — Smooth Fade + Slide */
+.animate-v2 {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,10 +1,20 @@
-// src/pages/contact.tsx
 import Head from 'next/head'
 import Image from 'next/image'
 import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function Contact(): React.JSX.Element {
+  const pathname = usePathname()
+  const router = useRouter()
+
   const [submitted, setSubmitted] = useState(false)
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  })
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,23 +22,69 @@ export default function Contact(): React.JSX.Element {
     message: ""
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+  // -----------------------
+  // VALIDATION FUNCTIONS
+  // -----------------------
+  const validateEmail = (email: string) => {
+    const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
+    return regex.test(email)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validatePhone = (phone: string) => {
+    const regex = /^[6-9]\d{9}$/
+    return regex.test(phone)
+  }
+
+  const validateForm = () => {
+    let newErrors: any = {}
+
+    if (!formData.name.trim()) newErrors.name = "Please enter your name."
+    if (!validateEmail(formData.email)) newErrors.email = "Please enter a valid email."
+    if (!validatePhone(formData.phone)) newErrors.phone = "Enter a valid 10-digit Indian phone number."
+    if (!formData.message.trim()) newErrors.message = "Message cannot be empty."
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  // -----------------------
+  // HANDLE CHANGE
+  // -----------------------
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+    setErrors({ ...errors, [e.target.name]: "" })
+  }
+
+  // -----------------------
+  // SUBMIT HANDLER
+  // -----------------------
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    if (!validateForm()) return
+
+    try {
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      })
+      setSubmitted(true)
+    } catch (error) {
+      console.error("Error sending contact form", error)
+    }
   }
 
   const handleReset = () => {
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: ""
-    })
+    setFormData({ name: "", email: "", phone: "", message: "" })
+    setErrors({})
     setSubmitted(false)
+  }
+
+  // Safe navigation to prevent same-page error
+  const navigateToContact = () => {
+    if (pathname !== '/contactus') {
+      router.push('/contactus')
+    }
   }
 
   return (
@@ -38,13 +94,8 @@ export default function Contact(): React.JSX.Element {
         <meta name="description" content="Contact Little Flower Play School" />
       </Head>
 
-      {/* BG COLOR FIXED */}
-      <section
-        className="py-12"
-        style={{ backgroundColor: "#c6e2eeff", marginBottom: "0" }}
-      >
+      <section className="py-12" style={{ backgroundColor: "#c6e2eeff", marginBottom: "0" }}>
         <div className="max-w-5xl mx-auto px-6">
-
           <h2 className="text-3xl font-extrabold mb-4 text-[#204d63]">
             Contact Us
           </h2>
@@ -54,39 +105,58 @@ export default function Contact(): React.JSX.Element {
           </p>
 
           <div className="grid md:grid-cols-2 gap-10">
-
             {/* FORM */}
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <input
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full border rounded-md p-3"
-                placeholder="Full name"
-              />
-              <input
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full border rounded-md p-3"
-                placeholder="Email"
-              />
-              <input
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full border rounded-md p-3"
-                placeholder="Phone"
-              />
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                className="w-full border rounded-md p-3"
-                rows={5}
-                placeholder="Message"
-              />
+              {/* NAME */}
+              <div>
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full border rounded-md p-3"
+                  placeholder="Full name"
+                />
+                {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+              </div>
 
+              {/* EMAIL */}
+              <div>
+                <input
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full border rounded-md p-3"
+                  placeholder="Email"
+                />
+                {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
+              </div>
+
+              {/* PHONE */}
+              <div>
+                <input
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full border rounded-md p-3"
+                  placeholder="Phone (10-digit India)"
+                />
+                {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
+              </div>
+
+              {/* MESSAGE */}
+              <div>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full border rounded-md p-3"
+                  rows={5}
+                  placeholder="Message"
+                />
+                {errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
+              </div>
+
+              {/* BUTTONS */}
               <div className="flex gap-4">
                 <button
                   type="submit"
@@ -127,10 +197,9 @@ export default function Contact(): React.JSX.Element {
               <p className="text-gray-700">Email: hello@littleflower.school</p>
               <p className="text-gray-700 mt-4">Address: Bangalore, India</p>
             </div>
-
           </div>
 
-          {/* ⭐ ADDED GOOGLE MAP — Bangalore ⭐ */}
+          {/* MAP */}
           <div className="mt-10 w-full rounded-xl overflow-hidden shadow-md">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3889.04064129656!2d77.5946!3d12.9716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670e1f3bb1f%3A0xdeb6e3f1a1b2c95a!2sBangalore%2C%20India!5e0!3m2!1sen!2sin!4v1693312345678"
@@ -141,7 +210,6 @@ export default function Contact(): React.JSX.Element {
               allowFullScreen
             ></iframe>
           </div>
-
         </div>
       </section>
     </>

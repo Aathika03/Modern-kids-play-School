@@ -1,100 +1,133 @@
 // src/components/layout/Navbar.tsx
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+
+const MENU = [
+  { label: "Programs", href: "/programs" },
+  { label: "Admissions", href: "/admissions" },
+  { label: "Our Philosophy", href: "/philosophy" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact Us", href: "/contact" },
+];
 
 export default function Navbar() {
   const [logoVisible, setLogoVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [logoActive, setLogoActive] = useState(false); // hover or touch state
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // normalize paths: remove query/hash and trailing slash
+  const normalize = (path: string) =>
+    (path || "").split("?")[0].split("#")[0].replace(/\/$/, "") || "/";
+
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    setMenuOpen(false);
+
+    const current = normalize(router.asPath);
+    const target = normalize(href);
+
+    // prevent navigation when trying to go to the same path
+    if (current === target) {
+      e.preventDefault();
+      return;
+    }
+  };
+
+  // Logo interaction handlers (hover + touch)
+  const triggerLogoPulse = (duration = 600) => {
+    setLogoActive(true);
+    window.clearTimeout((triggerLogoPulse as any)._timeoutId);
+    (triggerLogoPulse as any)._timeoutId = window.setTimeout(() => setLogoActive(false), duration);
+  };
 
   return (
-    <header style={{ backgroundColor: "#cae3ecff" }}>
+    <header
+      style={{ backgroundColor: "#cae3ecff", transform: `translateY(${scrollY * 0.05}px)` }}
+      className="shadow-sm transition-all duration-500"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
+        {/* LOGO - updated animation & touch support */}
+        <Link
+          href="/"
+          aria-label="Go to homepage"
+          className="flex items-center gap-3 select-none"
+          onMouseEnter={() => triggerLogoPulse(800)}
+          onMouseLeave={() => setLogoActive(false)}
+          onTouchStart={() => triggerLogoPulse(800)}
+        >
+          {/* Logo container */}
+          <div
+            className={`flex items-center justify-center rounded-full transition-transform duration-300 will-change-transform
+                        ${logoActive ? "scale-[1.12] -translate-y-1 rotate-3 shadow-2xl" : "scale-100 rotate-0"}
+                        `}
+            style={{ width: 48, height: 48 }}
+          >
+            {logoVisible ? (
+              <img
+                src="/logo.png"
+                alt="Little Flower"
+                className={`h-12 w-12 object-contain transition-transform duration-300 ${logoActive ? "rotate-6" : "rotate-0"}`}
+                onError={() => setLogoVisible(false)}
+                draggable={false}
+              />
+            ) : (
+              <div
+                className={`h-12 w-12 rounded-full bg-[#6fc3b6] flex items-center justify-center text-white font-bold transition-all duration-300
+                            ${logoActive ? "scale-[1.08] shadow-md" : ""}`}
+              >
+                LF
+              </div>
+            )}
+          </div>
 
-        {/* LOGO + TEXT */}
-        <Link href="/" className="flex items-center gap-3 cursor-pointer">
-          {logoVisible ? (
-            <img
-              src="/logo.png"
-              alt="Little Flower"
-              className="h-12 w-12 object-contain"
-              onError={() => setLogoVisible(false)}
-            />
-          ) : (
-            <div className="h-12 w-12 rounded-full bg-[#6fc3b6] flex items-center justify-center text-white font-bold">
-              LF
-            </div>
-          )}
-
-          <span className="font-bold text-sm sm:text-base tracking-wider">
+          {/* Logo text */}
+          <span
+            className={`font-bold transition-all duration-300 tracking-wider select-none
+                        ${logoActive ? "text-[#0e5964] scale-105" : "text-black"}`}
+            aria-hidden={false}
+          >
             LITTLE FLOWER
           </span>
         </Link>
 
-        {/* DESKTOP MENU */}
+        {/* NAV */}
         <nav className="hidden md:flex">
           <ul className="flex items-center gap-10 uppercase text-lg font-medium">
-            <li><Link href="/programs">Programs</Link></li>
-            <li><Link href="/admissions">Admissions</Link></li>
-            <li><Link href="/philosophy">Our Philosophy</Link></li>
-            <li><Link href="/gallery">Gallery</Link></li>
-            <li><Link href="/contact">Contact Us</Link></li>
+            {MENU.map(item => (
+              <li key={item.href} className="relative group hover:text-[#1f556b] transition duration-300">
+                <Link href={item.href} onClick={(e) => handleNavClick(e, item.href)}>
+                  {item.label}
+                </Link>
+                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#1f556b] transition-all duration-300 group-hover:w-full"></span>
+              </li>
+            ))}
           </ul>
         </nav>
 
-        {/* MOBILE MENU BUTTON (Custom SVG Icons) */}
-        <button
-          className="md:hidden p-2"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle Menu"
-        >
-          {menuOpen ? (
-            // Close Icon (X)
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="black"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          ) : (
-            // Menu Icon (Hamburger)
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="black"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          )}
+        <button className="md:hidden p-2 hover:scale-110 transition" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle Menu">
+          {menuOpen ? "✕" : "☰"}
         </button>
       </div>
 
-      {/* MOBILE DROPDOWN MENU */}
-      {menuOpen && (
-        <div className="md:hidden bg-[#D3ECF6] px-6 pb-5">
-          <ul className="flex flex-col gap-4 text-base font-medium uppercase">
-            <li><Link href="/programs" onClick={() => setMenuOpen(false)}>Programs</Link></li>
-            <li><Link href="/admissions" onClick={() => setMenuOpen(false)}>Admissions</Link></li>
-            <li><Link href="/philosophy" onClick={() => setMenuOpen(false)}>Our Philosophy</Link></li>
-            <li><Link href="/gallery" onClick={() => setMenuOpen(false)}>Gallery</Link></li>
-            <li><Link href="/contact" onClick={() => setMenuOpen(false)}>Contact Us</Link></li>
-          </ul>
-        </div>
-      )}
+      <div className={`md:hidden bg-[#D3ECF6] px-6 pb-5 overflow-hidden transition-all duration-500 ${menuOpen ? "max-h-96" : "max-h-0"}`}>
+        <ul className="flex flex-col gap-4 text-base font-medium uppercase pt-4">
+          {MENU.map(item => (
+            <li key={item.href}>
+              <Link href={item.href} onClick={(e) => handleNavClick(e, item.href)}>
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </header>
   );
 }
-
