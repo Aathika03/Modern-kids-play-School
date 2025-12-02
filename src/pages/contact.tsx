@@ -32,7 +32,7 @@ export default function Contact(): React.JSX.Element {
   }
 
   const validatePhone = (phone: string) => {
-    const regex = /^[6-9]\d{9}$/ // Indian 10-digit starting 6–9
+    const regex = /^[6-9]\d{9}$/
     return regex.test(phone)
   }
 
@@ -82,13 +82,28 @@ export default function Contact(): React.JSX.Element {
     }
   }
 
+  // -----------------------
+  // FIXED RESET HANDLER
+  // -----------------------
   const handleReset = () => {
-    setFormData({ name: "", email: "", phone: "", message: "" })
-    setErrors({})
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    })
+
+    setErrors({
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    })
+
     setSubmitted(false)
   }
 
-  // Prevent hard navigation error
+  // Prevent hard navigation warning
   const navigateToContact = () => {
     if (pathname !== '/contactus') {
       router.push('/contactus')
@@ -113,102 +128,95 @@ export default function Contact(): React.JSX.Element {
           </p>
 
           <div className="grid md:grid-cols-2 gap-10">
-            
+
             {/* LEFT: FORM */}
-{/* Note: this wrapper ensures the form is above any accidental overlays (z-index) */}
-<div style={{ position: "relative", zIndex: 20 }}>
-  <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-    {/* NAME */}
-    <div>
-      <input
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        className="w-full border rounded-md p-3"
-        placeholder="Full name"
-        required
-      />
-      {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
-    </div>
+            <div style={{ position: "relative", zIndex: 20 }}>
+              <form className="space-y-4" onSubmit={handleSubmit} noValidate>
 
-    {/* EMAIL */}
-    <div>
-      <input
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        className="w-full border rounded-md p-3"
-        placeholder="Email"
-        required
-      />
-      {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
-    </div>
+                {/* NAME */}
+                <div>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full border rounded-md p-3"
+                    placeholder="Full name"
+                    required
+                  />
+                  {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+                </div>
 
-    {/* PHONE */}
-    <div>
-      <input
-        type="tel"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-        className="w-full border rounded-md p-3"
-        placeholder="Phone (10-digit India)"
-        required
-      />
-      {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
-    </div>
+                {/* EMAIL */}
+                <div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full border rounded-md p-3"
+                    placeholder="Email"
+                    required
+                  />
+                  {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
+                </div>
 
-    {/* MESSAGE */}
-    <div>
-      <textarea
-        name="message"
-        value={formData.message}
-        onChange={handleChange}
-        className="w-full border rounded-md p-3"
-        rows={5}
-        placeholder="Message"
-        required
-      />
-      {errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
-    </div>
+                {/* PHONE */}
+                <div>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full border rounded-md p-3"
+                    placeholder="Phone (10-digit India)"
+                    required
+                  />
+                  {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
+                </div>
 
-    {/* BUTTONS */}
-    <div className="flex gap-4">
-      <button
-        type="submit"
-        onClick={(e) => {
-          // defensive: log click and call submit handler in case native submit is blocked
-          // (handleSubmit will still be called by onSubmit)
-          console.log("Send button clicked");
-          // no need to call handleSubmit here explicitly because onSubmit will run,
-          // but calling it could duplicate when both fire. We rely on onSubmit.
-        }}
-        className="px-5 py-2 rounded-md bg-[#60BFB2] text-white"
-        style={{ position: "relative", zIndex: 21 }}
-      >
-        Send Message
-      </button>
+                {/* MESSAGE */}
+                <div>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="w-full border rounded-md p-3"
+                    rows={5}
+                    placeholder="Message"
+                    required
+                  />
+                  {errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
+                </div>
 
-      <button
-        type="button"
-        onClick={handleReset}
-        className="px-5 py-2 rounded-md bg-gray-300 text-gray-800"
-      >
-        Reset
-      </button>
-    </div>
+                {/* BUTTONS */}
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-md bg-[#60BFB2] text-white"
+                    style={{ position: "relative", zIndex: 21 }}
+                  >
+                    Send Message
+                  </button>
 
-    {submitted && (
-      <p className="mt-3 text-green-700 font-semibold">
-        Thank you! We will contact you soon.
-      </p>
-    )}
-  </form>
-</div>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="px-5 py-2 rounded-md bg-gray-300 text-gray-800"
+                  >
+                    Reset
+                  </button>
+                </div>
 
+                {submitted && (
+                  <p className="mt-3 text-green-700 font-semibold">
+                    Thank you! We will contact you soon.
+                  </p>
+                )}
 
-            {/* RIGHT INFO BOX */}
+              </form>
+            </div>
+
+            {/* RIGHT BOX */}
             <div className="bg-[#F6FFFB] rounded-2xl p-6 shadow-sm">
               <div className="w-full h-48 relative rounded-xl overflow-hidden mb-4">
                 <Image
@@ -224,18 +232,20 @@ export default function Contact(): React.JSX.Element {
               <p className="text-gray-700">Email: hello@littleflower.school</p>
               <p className="text-gray-700 mt-4">Address: Bangalore, India</p>
             </div>
+
           </div>
 
           {/* MAP */}
           <div className="mt-10 w-full rounded-xl overflow-hidden shadow-md">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3889.04064129656!2d77.5946!3d12.9716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670e1f3bb1f%3A0xdeb6e3f1a1b2c95a!2sBangalore%2C%20India!5e0!3m2!1sen!2sin!4v1693312345678"
-              width="100%"
-              height="350"
-              loading="lazy"
-              style={{ border: 0 }}
-              allowFullScreen
-            ></iframe>
+           <iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3889.092139780587!2d77.59456271482055!3d12.971598990865998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670e1f3bb1f%3A0xdeb6e3f1a1b2c95a!2sBangalore%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1701234567890"
+  width="100%"
+  height="350"
+  style={{ border: 0 }}
+  loading="lazy"
+  allowFullScreen
+></iframe>
+
           </div>
         </div>
       </section>
