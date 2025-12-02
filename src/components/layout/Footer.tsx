@@ -1,14 +1,22 @@
 // src/components/layout/Footer.tsx
-import { FaInstagram, FaFacebook, FaYoutube, FaWhatsapp } from "react-icons/fa";
+import {
+  FaInstagram,
+  FaFacebook,
+  FaYoutube,
+  FaWhatsapp,
+  FaPhone,
+  FaEnvelope,
+  FaMapMarkerAlt,
+} from "react-icons/fa";
 
 export default function Footer(): React.JSX.Element {
   return (
     <footer className="relative">
-      <div
-        className="bg-gradient-to-b from-[#c6e2ee] to-[#fff7c9]
-        w-full pt-10 pb-4"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-10 flex flex-col md:flex-row justify-between items-start gap-10 relative z-[3]">
+      <div className="bg-gradient-to-b from-[#c6e2ee] to-[#fff7c9] w-full pt-10 pb-4">
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-10 
+                        flex flex-col md:flex-row justify-between items-start 
+                        gap-10 relative z-[3]">
 
           {/* Logo + Description */}
           <div className="w-full md:w-1/3">
@@ -30,7 +38,7 @@ export default function Footer(): React.JSX.Element {
             </p>
           </div>
 
-          {/* Explore + Contact + Follow Us */}
+          {/* Right Side Sections */}
           <div className="flex flex-col sm:flex-row gap-10 w-full md:w-auto">
 
             {/* Explore */}
@@ -47,11 +55,28 @@ export default function Footer(): React.JSX.Element {
             {/* Contact */}
             <div>
               <h4 className="footer-title">Contact</h4>
-              <div className="footer-list space-y-1">
-                <div>Phone: +91 98765 43210</div>
-                <div>Email: hello@littleflower.school</div>
-                <div className="mt-2">Address: Your Street, Your City</div>
-              </div>
+
+              <ul className="footer-list space-y-3">
+
+                <li className="flex items-center gap-2">
+                  <FaPhone className="text-[#1f556b]" />
+                  <span className="text-sm text-gray-700">+91 98765 43210</span>
+                </li>
+
+                <li className="flex items-center gap-2">
+                  <FaEnvelope className="text-[#1f556b]" />
+                  <span className="text-sm text-gray-700">hello@littleflower.school</span>
+                </li>
+
+                <li className="flex items-start gap-2">
+                  <FaMapMarkerAlt className="text-[#1f556b] mt-1" />
+                  <span className="text-sm text-gray-700">
+                    Little Flower Play School,  
+                    <br />Your Street, Your City
+                  </span>
+                </li>
+
+              </ul>
             </div>
 
             {/* Follow Us */}
@@ -89,6 +114,7 @@ export default function Footer(): React.JSX.Element {
 
               </ul>
             </div>
+
           </div>
         </div>
 
@@ -102,4 +128,3 @@ export default function Footer(): React.JSX.Element {
     </footer>
   );
 }
-  

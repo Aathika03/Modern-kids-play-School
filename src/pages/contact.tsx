@@ -1,3 +1,4 @@
+// src/pages/contact.tsx
 import Head from 'next/head'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -31,7 +32,7 @@ export default function Contact(): React.JSX.Element {
   }
 
   const validatePhone = (phone: string) => {
-    const regex = /^[6-9]\d{9}$/
+    const regex = /^[6-9]\d{9}$/ // Indian 10-digit starting 6–9
     return regex.test(phone)
   }
 
@@ -48,7 +49,7 @@ export default function Contact(): React.JSX.Element {
   }
 
   // -----------------------
-  // HANDLE CHANGE
+  // HANDLE INPUT CHANGE
   // -----------------------
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -63,12 +64,19 @@ export default function Contact(): React.JSX.Element {
     if (!validateForm()) return
 
     try {
-      await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       })
-      setSubmitted(true)
+
+      if (res.ok) {
+        setSubmitted(true)
+        setFormData({ name: "", email: "", phone: "", message: "" })
+      } else {
+        console.error("Failed to send message")
+      }
+
     } catch (error) {
       console.error("Error sending contact form", error)
     }
@@ -80,7 +88,7 @@ export default function Contact(): React.JSX.Element {
     setSubmitted(false)
   }
 
-  // Safe navigation to prevent same-page error
+  // Prevent hard navigation error
   const navigateToContact = () => {
     if (pathname !== '/contactus') {
       router.push('/contactus')
@@ -105,83 +113,102 @@ export default function Contact(): React.JSX.Element {
           </p>
 
           <div className="grid md:grid-cols-2 gap-10">
-            {/* FORM */}
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              {/* NAME */}
-              <div>
-                <input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full border rounded-md p-3"
-                  placeholder="Full name"
-                />
-                {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
-              </div>
+            
+            {/* LEFT: FORM */}
+{/* Note: this wrapper ensures the form is above any accidental overlays (z-index) */}
+<div style={{ position: "relative", zIndex: 20 }}>
+  <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+    {/* NAME */}
+    <div>
+      <input
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        className="w-full border rounded-md p-3"
+        placeholder="Full name"
+        required
+      />
+      {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+    </div>
 
-              {/* EMAIL */}
-              <div>
-                <input
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full border rounded-md p-3"
-                  placeholder="Email"
-                />
-                {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
-              </div>
+    {/* EMAIL */}
+    <div>
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        className="w-full border rounded-md p-3"
+        placeholder="Email"
+        required
+      />
+      {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
+    </div>
 
-              {/* PHONE */}
-              <div>
-                <input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full border rounded-md p-3"
-                  placeholder="Phone (10-digit India)"
-                />
-                {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
-              </div>
+    {/* PHONE */}
+    <div>
+      <input
+        type="tel"
+        name="phone"
+        value={formData.phone}
+        onChange={handleChange}
+        className="w-full border rounded-md p-3"
+        placeholder="Phone (10-digit India)"
+        required
+      />
+      {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
+    </div>
 
-              {/* MESSAGE */}
-              <div>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full border rounded-md p-3"
-                  rows={5}
-                  placeholder="Message"
-                />
-                {errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
-              </div>
+    {/* MESSAGE */}
+    <div>
+      <textarea
+        name="message"
+        value={formData.message}
+        onChange={handleChange}
+        className="w-full border rounded-md p-3"
+        rows={5}
+        placeholder="Message"
+        required
+      />
+      {errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
+    </div>
 
-              {/* BUTTONS */}
-              <div className="flex gap-4">
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-md bg-[#60BFB2] text-white"
-                >
-                  Send Message
-                </button>
+    {/* BUTTONS */}
+    <div className="flex gap-4">
+      <button
+        type="submit"
+        onClick={(e) => {
+          // defensive: log click and call submit handler in case native submit is blocked
+          // (handleSubmit will still be called by onSubmit)
+          console.log("Send button clicked");
+          // no need to call handleSubmit here explicitly because onSubmit will run,
+          // but calling it could duplicate when both fire. We rely on onSubmit.
+        }}
+        className="px-5 py-2 rounded-md bg-[#60BFB2] text-white"
+        style={{ position: "relative", zIndex: 21 }}
+      >
+        Send Message
+      </button>
 
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="px-5 py-2 rounded-md bg-gray-300 text-gray-800"
-                >
-                  Reset
-                </button>
-              </div>
+      <button
+        type="button"
+        onClick={handleReset}
+        className="px-5 py-2 rounded-md bg-gray-300 text-gray-800"
+      >
+        Reset
+      </button>
+    </div>
 
-              {submitted && (
-                <p className="mt-3 text-green-700 font-semibold">
-                  Thank you! We will contact you soon.
-                </p>
-              )}
-            </form>
+    {submitted && (
+      <p className="mt-3 text-green-700 font-semibold">
+        Thank you! We will contact you soon.
+      </p>
+    )}
+  </form>
+</div>
 
-            {/* RIGHT BOX */}
+
+            {/* RIGHT INFO BOX */}
             <div className="bg-[#F6FFFB] rounded-2xl p-6 shadow-sm">
               <div className="w-full h-48 relative rounded-xl overflow-hidden mb-4">
                 <Image

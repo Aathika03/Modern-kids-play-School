@@ -14,6 +14,7 @@ type Props = {
   tag?: string;
   quickPeek?: QuickPeekItem[];
   modalText?: string;
+  extraPoints?: string[]; // ✅ NEW FIELD
 };
 
 export default function ProgramCard({
@@ -22,6 +23,7 @@ export default function ProgramCard({
   image,
   quickPeek = [],
   modalText = "",
+  extraPoints = [], // ✅ DEFAULT EMPTY
   tag = "All Ages",
 }: Props): React.JSX.Element {
   const [showModal, setShowModal] = useState(false);
@@ -116,7 +118,23 @@ export default function ProgramCard({
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-2xl font-semibold text-[#204d63]">{title}</h3>
-            <p className="text-gray-700 mt-3 leading-relaxed">{modalText}</p>
+            <p className="text-gray-700 mt-3 leading-relaxed whitespace-pre-line">
+              {modalText}
+            </p>
+
+            {/* Extra Learning Points */}
+            {extraPoints.length > 0 && (
+              <div className="mt-4">
+                <h4 className="font-semibold text-[#204d63] mb-2">
+                  Extra Fun Learning:
+                </h4>
+                <ul className="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                  {extraPoints.map((point, index) => (
+                    <li key={index}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Modal Image */}
             <div className="mt-4 w-full h-48 rounded-xl overflow-hidden">
@@ -142,7 +160,7 @@ export default function ProgramCard({
           content: "";
           position: absolute;
           inset: -40%;
-          background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
           opacity: 0;
           transition: opacity 0.4s ease;
         }
@@ -154,9 +172,15 @@ export default function ProgramCard({
           animation: bounce-slow 1.6s infinite;
         }
         @keyframes bounce-slow {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
-          100% { transform: translateY(0); }
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
+          100% {
+            transform: translateY(0);
+          }
         }
       `}</style>
     </>

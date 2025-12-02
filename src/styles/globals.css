@@ -124,3 +124,18 @@
     transform: translateY(0);
   }
 }
+.footer-title {
+  @apply text-lg font-semibold text-[#204d63] mb-3;
+}
+
+.footer-list {
+  @apply flex flex-col gap-2 text-sm;
+}
+
+.footer-link {
+  @apply text-gray-700 hover:text-[#1f556b] transition;
+}
+
+.footer-social {
+  @apply flex items-center gap-2 text-sm;
+}
