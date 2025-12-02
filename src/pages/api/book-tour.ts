@@ -1,4 +1,5 @@
 // src/pages/api/book-tour.ts
+
 import type { NextApiRequest, NextApiResponse } from "next";
 const nodemailer = require("nodemailer");
 
@@ -29,33 +30,18 @@ export default async function handler(
     });
   }
 
-  // quick env presence check (no secrets logged)
-  console.log("Mail env presence:", {
-    has_EMAIL_USER: !!process.env.EMAIL_USER,
-    has_EMAIL_PASS: !!process.env.EMAIL_PASS,
-    has_EMAIL_TO: !!process.env.EMAIL_TO,
-  });
-
+  // Nodemailer transporter (same as your Contact)
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER, // your Gmail
+      pass: process.env.EMAIL_PASS, // your App Password
     },
   });
 
-  // Verify transporter so we fail early with clear server log
-  try {
-    await transporter.verify();
-    console.log("Mail transporter verified OK");
-  } catch (verifyErr) {
-    console.error("Mail transporter verify failed:", verifyErr && verifyErr.message ? verifyErr.message : verifyErr);
-    return res.status(500).json({ message: "Mail server authentication failed. Check EMAIL_USER and EMAIL_PASS." });
-  }
-
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_TO,
+    to: process.env.EMAIL_TO, // your receiving email
     subject: "New Tour Booking Request",
     html: `
       <h2>New Tour Booking Request</h2>
@@ -71,11 +57,12 @@ export default async function handler(
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Book-tour email sent OK, messageId:", info?.messageId || "(no id)");
+    await transporter.sendMail(mailOptions);
     return res.status(200).json({ message: "Success" });
   } catch (err) {
-    console.error("Email sending error:", err && err.message ? err.message : err);
-    return res.status(500).json({ message: "Email sending failed. Please try again." });
+    console.error("Email sending error", err);
+    return res
+      .status(500)
+      .json({ message: "Email sending failed. Please try again." });
   }
 }
